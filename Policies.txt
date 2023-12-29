@@ -1,0 +1,232 @@
+======================================================================
+
++Hub and Spoke
++TLOC Extension
++Direct Internet Access
++VPN Route Leaking
+
+-VRRP
+*Application Aware Routing
+*Service Chaning (i.e-Firewall,Application)
+-VPN Membership
+
+-ACL
+*QOS
+*Security
+*CoLo Clastering
+-Cloud on Ramp
+-ZTP, Respirotory
+
+======================================================================
+
+Hub and Spoke - Policy
+https://www.youtube.com/watch?v=uTiq5ct4SPQ
+
+Required:
+	Default NULL Route = Hub > Service VPN
+	List = HubSite, SpokeSite, 
+	VPN = ServiceVPN
+
+Policy:
+	Centralized > Topology > Hub and Spoke
+		VPN List = VPNList
+		Sequence Rule 1
+			Match = HubSite = Hubsite List
+			Match = SpokeSite = Spokesite List
+
+	Centralized > Apply Policy > Topology
+			Site List = Outbound Site List = SpokeSite
+
+
+======================================================================
+
+Hub and Spoke - Routing Based Policy (Type-1)
+https://www.youtube.com/watch?v=LjsqbgSGtmU
+
+Required:
+	Default NULL Route = Hub = Service VPN
+	List = HubSites, SpokeSite
+	VPN = ServiceVPN
+	Prefix = SpokePrefixList (Optional)
+
+
+Policy:
+	Centralized > Topology > Custom Control
+		Sequence Type = Route
+			Sequence Rule 1
+				Match = Site = SpokeSite
+					VPN = ServiceVPN
+				Action = Reject
+			Default Action = Allow
+
+	Centralized > Apply Policy > Topology
+			Site List = Outbound Site List = SpokeSite
+
+
+======================================================================
+			
+Hub and Spoke - TLOC Based Policy (Type-2)
+https://www.youtube.com/watch?v=oS1NjMEZDmA
+
+Required:
+	Default NULL Route = Hub = Service VPN
+	List = HubSite, SpokeSite
+	VPN = ServicVPN
+	Prefix = Spoke PrefixList (optional)
+	TLOC = HubTLOC
+
+
+Policy:
+	Centralized > Topology > Custom Control
+		Sequence Type = Route
+			Sequence Rule 1
+				Match = Site = SpokeSite
+					VPN = ServiceVPN
+				Action = TLOC = HubTLOC
+					Allow
+			Default Action = Allow
+
+	Centralized > Apply Policy > Topology
+			Site List = Outbound Site List = SpokeSite
+
+======================================================================
+
+TLOC Extension (Template)
+https://www.youtube.com/watch?v=gdLer4gmeX8
+
+Biz-Internet TLOC-Extention:
+
+vEdge10A:
+	VPN0	= Biz-Internet Interface = NAT
+		= TLOC-Extender Interface
+			= ip address (Biz-Internet TLOC-Extender)
+			= tloc-extention "Biz-Internet Interface"
+vEdge10B:
+	VPN0	= Biz-Internet Interface 
+			= ip address (Biz-Internet TLOC-Extender Network)
+			= TLOC information same as "vEdge10A Biz-Internet Interface"
+		= Default Route = 0.0.0.0/0 "Biz-Internet TLOC-Extenter IP"
+
+
+MPLS TLOC-Extention:
+
+vEdge10B:
+	VPN0	= TLOC-Extention Interface
+			= ip address (MPLS TLOC-Extender)
+			= tloc-extention "MPLS Interface"
+		= Router BGP
+			= address-family ipv4 unicast
+				= network "MPLS TLOC-Exteder"
+vEdge10A
+	VPN0	= MPLS Interface
+			= ip address (MPLS TLOC-Extender Network)
+			= TLOC information same as "vEdge10B MPLS Interface"
+		= ip route 0.0.0.0/0 "Next Hop MPLS TLOC-Extender IP"
+
+======================================================================
+
+Direct Internet Access - Local Breakout Template
+
+Template:
+	TransportVPN = Enable NAT
+	ServiceVPN = Default Route = 0.0.0.0/0 VPN0
+*			Enable VPN
+
+======================================================================
+
+Direct Internet Access - Local Breakout Policy
+
+Required:
+	NAT = Transport VPN Internet Interface
+	Site = DIASite
+	VPN = DIAVPN
+	Prefix = Source PrefixList
+
+Policy:
+	Centralized > Trafic Rules > Trafic Data Policy
+		Sequence Type = Custom
+			Sequence Rule 1			
+				Match = Source Data Prefix = Source PrefixList
+				Action = Accept = NAT VPN
+
+	Centralized > Apply Policy > Traffic Data
+			From Service = Site List = DIASite
+					VPN List = DIAVPN
+
+======================================================================	
+
+Direct Internet Access - Backhaul and Fallback Policy
+
+Required:
+	NAT = Transport VPN Internet Interface
+	Site = DIASite
+	VPN = DIAVPN
+	Prefix = Source PrefixList, DetaCenter Prefixlist
+
+Policy:
+	Centralized > Trafic Rules > Trafic Data Policy
+		Sequence Type = Custom
+			Sequence Rule 1
+				Match = Source Data Prefix = Source PrefixList
+					Destination Data Prefix = DetaCenter PrefixList
+				Action = Accept
+			Sequence Rule 2
+				Match = Source Data Prefix = Source PrefixList
+				Action = Accept = NAT VPN = Fallback
+
+	Centralized > Apply Policy > Traffic Data
+			From Service = Site List = DIASite
+					VPN List = DIAVPN
+
+======================================================================
+
+VPN Route Leaking - Policy
+
+Required:
+	Site = Site1, Site2
+	VPN = ServiceVPN1(Site1), ServiceVPN2(Site2)
+
+Policy:
+	Centralized > Topology > Custom Control
+		Sequence Type = Route
+			Sequence Rule 1
+				Match = VPN = ServiceVPN1
+				Action = Accept
+					Export To = ServiceVPN2
+
+			Sequence Rule 2
+				Match = VPN = ServiceVPN2
+				Action = Accept
+					Export To = ServiceVPN1
+
+			Default Action = Allow
+
+	Centralized > Apply Policy > Topology
+			Site List = Inbound Site List = Site1, Site2
+
+====================================================================== 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
