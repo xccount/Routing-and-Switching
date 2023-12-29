@@ -1,0 +1,24 @@
+conf# hostname ROOTCA
+
+ip ssh version 2
+ip http server
+ip http path flash:
+ip http authentication local
+username admin privilage 15 password cisco
+
+crypto key generate rsa lebel ROOT modulus 2048
+ra(cs-server)#crytpto pki server ROOT
+database url flash:
+database level complete
+issuer-name cn=adminlab.local
+hash sh256
+database archive pkcs12 password cisco123
+grant auto
+no shutdown
+exit
+
+crypto pki export ROOT pem url flash:
+
+crypto pki export ROOT pem terminal
+
+
