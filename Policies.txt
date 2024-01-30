@@ -208,8 +208,8 @@ Policy:
 Application Aware Routing - Policy
 
 Required:
-	Application =
-	Site	=
-	VPN	=
-	SLA	=
+	Application = ApplicationList
+	Site = SiteList 
+	VPN	= ServiceVPN
+	SLA	= SLAClass
 	
