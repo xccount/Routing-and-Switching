@@ -1,0 +1,88 @@
+#config-transaction
+	hostname Site10A
+	ip host vbond1 10.1.0.2
+	
+	system
+		system-ip 10.1.1.1
+		site-id 123
+		organization-name sdwan0
+		vbond vbond1
+		exit
+	commit
+	
+	interface GigabitEthernet 1
+		no shutdown
+		ip address 172.16.10.1 255.255.255.0
+		exit
+	interface GigabitEthernet 2
+		no shutdown
+		ip add 172.18.10.1 255.255.255.0
+		exit
+	ip route 0.0.0.0 0.0.0.0 172.16.10.1
+	
+	sdwan
+		interface GigabitEthernet1
+			tunnel-interface
+				color biz-internet
+				encapsulation ipsec
+				allow service all
+				exit
+			exit
+			
+		interface GigabitEthernet2
+			tunnel-interface
+				color mpls
+				encapsulation ipsec
+				allow service all
+				exit
+			exit
+		interface Tunnel 1
+			ip unnumbered GigabitEthernet1
+			tunnel source GigabitEthernet1
+			tunnel mode sdwan
+			exit
+		interface Tunnel 2
+			ip unnumbered GigabitEthernet2
+			tunnel source GigabitEthernet2
+			tunnel mode sdwan
+			exit
+		exit
+	exit
+commit
+
+=====================ONBOARDING===========================
+
+Install Root-CA Certificate
+
+1. Upload KEY.ca on Root-CA server terminal
+config
+	crypto pki export KEY pem terminal
+
+2. Create KEY.ca on cEdge
+#tclsh
+	puts [open "flash:KEY.ca" w+] {
+	[paste the certificate here]
+	}
+
+3. Install Root-CA (KEY.ca)
+#request platform software sdwan root-cert-chain install bootflash:KEY.ca
+#show sdwan certificate root-ca-cert
+
+4. Upload CSR
+#request platform software sdwan csr upload bootflash:csr.txt
+	organization-name: sdwan0
+	re-enter organization-name: sdwan0
+#more bootflash:csr.txt
+
+5. Sign and Generate Certificate from Root-CA server
+#crypto pki server KEY request pkcs10 terminal
+[paste copied hash from csr.txt]
+
+6. Install Certificate
+#tclsh
+	puts [open "flash:cert.txt" w+] {
+	[paste generated certificate here]
+	}
+#request platform software sdwan certificate install bootflash:cert.txt
+#show sdwan certificate serial
+
