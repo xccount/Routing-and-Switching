@@ -28,7 +28,6 @@
 				allow service all
 				exit
 			exit
-			
 		interface GigabitEthernet2
 			tunnel-interface
 				color mpls
@@ -36,16 +35,16 @@
 				allow service all
 				exit
 			exit
-		interface Tunnel 1
-			ip unnumbered GigabitEthernet1
-			tunnel source GigabitEthernet1
-			tunnel mode sdwan
-			exit
-		interface Tunnel 2
-			ip unnumbered GigabitEthernet2
-			tunnel source GigabitEthernet2
-			tunnel mode sdwan
-			exit
+		exit
+	interface Tunnel 1
+		ip unnumbered GigabitEthernet1
+		tunnel source GigabitEthernet1
+		tunnel mode sdwan
+		exit
+	interface Tunnel 2
+		ip unnumbered GigabitEthernet2
+		tunnel source GigabitEthernet2
+		tunnel mode sdwan
 		exit
 	exit
 commit

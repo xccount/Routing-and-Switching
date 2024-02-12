@@ -5,9 +5,9 @@
 +Direct Internet Access
 +VPN Route Leaking
 
--VRRP
-*Application Aware Routing
-*Service Chaning (i.e-Firewall,Application)
+*VRRP
++Application Aware Routing
++Service Chaning (i.e-Firewall,Application)
 -VPN Membership
 
 -ACL
@@ -213,3 +213,10 @@ Required:
 	VPN	= ServiceVPN
 	SLA	= SLAClass
 	
+======================================================================
+
+VRRP - Template
+
+
+when to use tloc-extention & vrrp
+tloc-extention same interface
