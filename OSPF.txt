@@ -18,5 +18,6 @@ Add Summarized Broadcast Domain
 	
 LSA Type 5
 	redistribute <route type>
+
 LSA Type 7
 	area 1 nssa default-information-originate
