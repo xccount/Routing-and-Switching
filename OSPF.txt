@@ -1,0 +1,22 @@
+OSPF
+router ospf <process id>
+	network <int ip> <wildcard> area <area no>
+
+LAS Type 1, 2 and 3
+Add Single Broadcast Domain
+	network <network id> <Wildcard> area <area no>
+
+Add Multi Broadcast Domain Range (Non-Summarized)
+	network <summarized network id> <wildcard> area <area no>
+
+Add Summarized Broadcast Domain
+	area 0 range 192.168.0.0 255.255.0.0
+	
+Interface Type (Highest Priority Superior)
+	ip ospf priority 0 (DROTHER Fixed)
+	ip ospf priority 1-255 (DR/BDR/DROTHER)
+	
+LSA Type 5
+	redistribute <route type>
+LSA Type 7
+	area 1 nssa default-information-originate
