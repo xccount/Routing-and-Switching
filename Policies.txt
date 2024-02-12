@@ -69,7 +69,6 @@ Hub and Spoke - TLOC Based Policy (Type-2)
 https://www.youtube.com/watch?v=oS1NjMEZDmA
 
 Required:
-	Default NULL Route = Hub = Service VPN
 	List = HubSite, SpokeSite
 	VPN = ServicVPN
 	Prefix = Spoke PrefixList (optional)
@@ -209,8 +208,8 @@ Policy:
 Application Aware Routing - Policy
 
 Required:
-	Application =
-	Site	=
-	VPN	=
-	SLA	=
+	Application = ApplicationList
+	Site = SiteList 
+	VPN	= ServiceVPN
+	SLA	= SLAClass
 	
