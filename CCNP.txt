@@ -1,0 +1,80 @@
+======================================================================================================
+
+Hot Standby Router Protocol: HSRP
+
+R1 Active Router
+configure terminal
+	interface <inside int id>
+		ip add <ip> <subnet>
+		standby <sequence no> ip <virtual gateway ip> 
+		standby <sequence no> priority <priority no> #highest successor
+		standby <sequence no> preempt
+		standby <sequence no> track <outside int id> #mention type of tracker i.e int, host, protocol
+
+R2 Standby Router
+configure terminal
+	interface <inside int id>
+		ip add <ip> <subnet>
+		standby <sequence no> ip <virtual gateway ip> 
+		standby <sequence no> priority <priority no> #default 10 decement
+		standby <sequence no> preempt
+
+Notes:
+	Cisco Proprietary
+	Port (UDP): 1985 | Multicast: 224.0.0.2, 224.0.0.102 (v2)
+	Hello: 3sec | Hold: 10sec
+	Group No: 0-255, 0-4095 (v2)
+	Default standby interface decement priority 10
+	Active and Standby router interface and Virtual Gateway should be in same Domain.
+	
+	
+======================================================================================================
+
+Virtual Router Redundancy Protocol (VRRP)
+
+R1 Active Router
+configure terminal
+	track <track no> interface <outside int id> line-protocol #mention type of tracker i.e int, host, protocol
+	
+	interface <inside int id>
+		ip add <ip> <subnet>
+		vrrp <sequence no> ip <virtual gateway ip>
+		vrrp <sequence no> priority <priority no> #default 10 decement
+		vrrp <sequence no> track <track no> decement <decement no>
+
+R2 Standby Router
+configure terminal
+	interface <inside int id>
+		vrrp <sequence no> ip <virtual gateway ip>
+
+Notes:
+	Protocol No: 112 | Multicast: 224.0.0.18
+	Master Advertisement: 1sec | Master Down: 3.069sec
+	Preemt Enabled by Default
+	Active and Standby router interface and Virtual Gateway should be in same Domain.
+	
+
+======================================================================================================
+
+GLBP
+
+======================================================================================================
+
+IP SLA: ISP Failover
+
+configure terminal
+	ip sla <sequence no>
+		icmp-echo <destination ip> source-ip/int <ip/int>
+			frequency/ timeout/ threshold etc #parameters
+	ip sla schedule <sequence no> start-time <start time parameters> life <end time parameters>
+	track <sequence no> rtr <sequence no> rechability
+	ip router <destination> <subnet> <gateway> track <sequence no>
+	
+Troubleshoot:
+	show track
+	show ip sla statistic/ configure/ etc.
+
+Notes:
+	
+======================================================================================================
+	
