@@ -38,14 +38,14 @@ configure terminal
 	
 	interface <inside int id>
 		ip add <ip> <subnet>
-		vrrp <sequence no> ip <virtual gateway ip>
-		vrrp <sequence no> priority <priority no> #default 10 decement
-		vrrp <sequence no> track <track no> decement <decement no>
+		vrrp <Group no> ip <virtual gateway ip>
+		vrrp <Group no> priority <priority no> #default 10 decement
+		vrrp <Group no> track <track no> decement <decement no>
 
 R2 Standby Router
 configure terminal
 	interface <inside int id>
-		vrrp <sequence no> ip <virtual gateway ip>
+		vrrp <Group no> ip <virtual gateway ip>
 
 Notes:
 	Protocol No: 112 | Multicast: 224.0.0.18
@@ -55,7 +55,7 @@ Notes:
 	
 
 ======================================================================================================
-
+ 
 GLBP
 
 ======================================================================================================
@@ -63,12 +63,13 @@ GLBP
 IP SLA: ISP Failover
 
 configure terminal
-	ip sla <sequence no>
+	ip sla <entry no>
 		icmp-echo <destination ip> source-ip/int <ip/int>
-			frequency/ timeout/ threshold etc #parameters
-	ip sla schedule <sequence no> start-time <start time parameters> life <end time parameters>
-	track <sequence no> rtr <sequence no> rechability
-	ip router <destination> <subnet> <gateway> track <sequence no>
+			frequency/ timeout/ threshold etc #echo parameters
+	ip sla schedule <entry no> start-time <start time parameters> life <end time parameters>
+	track <object no> rtr <euence no> rechability
+or	track <object no> ip sla <entry no> <state/reachability>
+	ip router <destination> <subnet> <gateway> track <object no>
 	
 Troubleshoot:
 	show track
