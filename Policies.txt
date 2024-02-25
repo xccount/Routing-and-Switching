@@ -17,7 +17,7 @@
 -Cloud on Ramp
 -ZTP, Respirotory
 
-======================================================================
+######################################################################
 
 Hub and Spoke - Policy
 https://www.youtube.com/watch?v=uTiq5ct4SPQ
@@ -88,7 +88,7 @@ Policy:
 	Centralized > Apply Policy > Topology
 			Site List = Outbound Site List = SpokeSite
 
-======================================================================
+######################################################################
 
 TLOC Extension (Template)
 https://www.youtube.com/watch?v=gdLer4gmeX8
@@ -122,7 +122,7 @@ vEdge10A
 			= TLOC information same as "vEdge10B MPLS Interface"
 		= ip route 0.0.0.0/0 "Next Hop MPLS TLOC-Extender IP"
 
-======================================================================
+######################################################################
 
 Direct Internet Access - Local Breakout Template
 
@@ -177,7 +177,7 @@ Policy:
 			From Service = Site List = DIASite
 					VPN List = DIAVPN
 
-======================================================================
+######################################################################
 
 VPN Route Leaking - Policy
 
@@ -203,7 +203,7 @@ Policy:
 	Centralized > Apply Policy > Topology
 			Site List = Inbound Site List = Site1, Site2
 
-====================================================================== 
+###################################################################### 
 
 Application Aware Routing - Policy
 
@@ -213,10 +213,15 @@ Required:
 	VPN	= ServiceVPN
 	SLA	= SLAClass
 	
-======================================================================
+######################################################################
 
 VRRP - Template
 
 
+
+
 when to use tloc-extention & vrrp
 tloc-extention same interface
+
+
+######################################################################
