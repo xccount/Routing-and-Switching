@@ -2,10 +2,11 @@
 
 +Hub and Spoke
 +TLOC Extension
++VRRP
 +Direct Internet Access
 +VPN Route Leaking
 
-*VRRP
+
 +Application Aware Routing
 +Service Chaning (i.e-Firewall,Application)
 -VPN Membership
