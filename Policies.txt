@@ -244,7 +244,7 @@ vEdge30A + vEdge30B
 	Interface (ServiceVPN)
 		= VRRP 
 			Group ID
-			Priority (Interface)				#Highest priority becomes master
+			Priority (Interface)			#Highest priority becomes master
 			Track OMP / Track Prefix List		#Optional
 			IP Address (Virtual)
 			
