@@ -1,5 +1,4 @@
 ======================================================================
-
 +Hub and Spoke
 +TLOC Extension
 +VRRP
@@ -10,6 +9,7 @@
 +ACL
 
 -VPN Membership
+-Route Policy
 *QOS
 *Security
 *CoLo Clastering
@@ -47,7 +47,6 @@ Required:
 	VPN = ServiceVPN
 	Prefix = SpokePrefixList (Optional)
 
-
 Policy:
 	Centralized > Topology > Custom Control
 		Sequence Type = Route
@@ -70,7 +69,6 @@ Required:
 	VPN = ServicVPN
 	Prefix = Spoke PrefixList (optional)
 	TLOC = HubTLOC
-
 
 Policy:
 	Centralized > Topology > Custom Control
@@ -104,7 +102,6 @@ vEdge10B:
 			= ip address (Biz-Internet TLOC-Extender Network)
 			= TLOC information same as "vEdge10A Biz-Internet Interface"
 		= Default Route = 0.0.0.0/0 "Biz-Internet TLOC-Extenter IP"
-
 
 MPLS TLOC-Extention:
 
@@ -254,7 +251,6 @@ Required:
 	Interface: ServiceInterface with ACL		#Ingress/Egress ACL
 	Data Prefix: SourcePrefix, DestinationPrefix
 	
-
 Policy:
 	Localized Policy > Access Control Lists > Add IPv4/6 ACL Policy
 		Sequence List 1
@@ -269,13 +265,11 @@ Policy:
 				
 		Default Action = Accept
 
-
 Apply:
 	Localized Policy > Configure Access Control List > Add/Import ACL Policy
 	
 	Template > Device > "Device Template" > Service VPN > <add Service Interface with ACL>
 	Template > Device > "Device Template" > Additional Templates > Policy > <Chose_Policy>
-	
 	
 ######################################################################
 
