@@ -1,23 +1,22 @@
 ======================================================================
-
 +Hub and Spoke
 +TLOC Extension
++VRRP
 +Direct Internet Access
 +VPN Route Leaking
++Application Aware Routing
++Service Chaning (i.e-Firewall,Application)
++ACL
 
--VRRP
-*Application Aware Routing
-*Service Chaning (i.e-Firewall,Application)
 -VPN Membership
-
--ACL
+-Route Policy
 *QOS
 *Security
 *CoLo Clastering
 -Cloud on Ramp
 -ZTP, Respirotory
 
-======================================================================
+######################################################################
 
 Hub and Spoke - Policy
 https://www.youtube.com/watch?v=uTiq5ct4SPQ
@@ -37,7 +36,6 @@ Policy:
 	Centralized > Apply Policy > Topology
 			Site List = Outbound Site List = SpokeSite
 
-
 ======================================================================
 
 Hub and Spoke - Routing Based Policy (Type-1)
@@ -48,7 +46,6 @@ Required:
 	List = HubSites, SpokeSite
 	VPN = ServiceVPN
 	Prefix = SpokePrefixList (Optional)
-
 
 Policy:
 	Centralized > Topology > Custom Control
@@ -62,7 +59,6 @@ Policy:
 	Centralized > Apply Policy > Topology
 			Site List = Outbound Site List = SpokeSite
 
-
 ======================================================================
 			
 Hub and Spoke - TLOC Based Policy (Type-2)
@@ -73,7 +69,6 @@ Required:
 	VPN = ServicVPN
 	Prefix = Spoke PrefixList (optional)
 	TLOC = HubTLOC
-
 
 Policy:
 	Centralized > Topology > Custom Control
@@ -88,7 +83,7 @@ Policy:
 	Centralized > Apply Policy > Topology
 			Site List = Outbound Site List = SpokeSite
 
-======================================================================
+######################################################################
 
 TLOC Extension (Template)
 https://www.youtube.com/watch?v=gdLer4gmeX8
@@ -96,33 +91,36 @@ https://www.youtube.com/watch?v=gdLer4gmeX8
 Biz-Internet TLOC-Extention:
 
 vEdge10A:
-	VPN0	= Biz-Internet Interface = NAT
+	VPN0
+		= Biz-Internet Interface = NAT
 		= TLOC-Extender Interface
 			= ip address (Biz-Internet TLOC-Extender)
 			= tloc-extention "Biz-Internet Interface"
 vEdge10B:
-	VPN0	= Biz-Internet Interface 
+	VPN0
+		= Biz-Internet Interface 
 			= ip address (Biz-Internet TLOC-Extender Network)
 			= TLOC information same as "vEdge10A Biz-Internet Interface"
 		= Default Route = 0.0.0.0/0 "Biz-Internet TLOC-Extenter IP"
 
-
 MPLS TLOC-Extention:
 
 vEdge10B:
-	VPN0	= TLOC-Extention Interface
+	VPN0	
+		= TLOC-Extention Interface
 			= ip address (MPLS TLOC-Extender)
 			= tloc-extention "MPLS Interface"
 		= Router BGP
 			= address-family ipv4 unicast
 				= network "MPLS TLOC-Exteder"
 vEdge10A
-	VPN0	= MPLS Interface
+	VPN0	
+		= MPLS Interface
 			= ip address (MPLS TLOC-Extender Network)
 			= TLOC information same as "vEdge10B MPLS Interface"
 		= ip route 0.0.0.0/0 "Next Hop MPLS TLOC-Extender IP"
 
-======================================================================
+######################################################################
 
 Direct Internet Access - Local Breakout Template
 
@@ -142,7 +140,7 @@ Required:
 	Prefix = Source PrefixList
 
 Policy:
-	Centralized > Trafic Rules > Trafic Data Policy
+	Centralized > Trafic Policy > Traffic Data
 		Sequence Type = Custom
 			Sequence Rule 1			
 				Match = Source Data Prefix = Source PrefixList
@@ -163,7 +161,7 @@ Required:
 	Prefix = Source PrefixList, DetaCenter Prefixlist
 
 Policy:
-	Centralized > Trafic Rules > Trafic Data Policy
+	Centralized > Trafic Policy > Traffic Data
 		Sequence Type = Custom
 			Sequence Rule 1
 				Match = Source Data Prefix = Source PrefixList
@@ -177,7 +175,7 @@ Policy:
 			From Service = Site List = DIASite
 					VPN List = DIAVPN
 
-======================================================================
+######################################################################
 
 VPN Route Leaking - Policy
 
@@ -203,13 +201,76 @@ Policy:
 	Centralized > Apply Policy > Topology
 			Site List = Inbound Site List = Site1, Site2
 
-====================================================================== 
+###################################################################### 
 
-Application Aware Routing - Policy
+Application-Aware Routing - Policy
 
 Required:
 	Application = ApplicationList
 	Site = SiteList 
 	VPN	= ServiceVPN
 	SLA	= SLAClass
+	Color = TLOC-Color
 	
+Policy:
+	Centralized > Trafic Policy > Application-Aware Routing
+		Sequence Type = App Route
+			Sequence Rule 1
+				Match = Application/Application Family List = Telnet
+				Action = SLA Class List = SLAClass
+					Preferred Color = TLOC-Color
+
+			Sequence Rule 1
+				Match = Protocol = 1
+				Action = SLA Class = SLAClass
+				Preferred Color = TLOC-Color
+			
+			Default Action = Allow
+
+	Centralized > Apply Policy > Application-Aware Routing
+		Site List = SiteList
+		VPN List = ServiceVPN
+		
+######################################################################
+
+VRRP - Template
+
+vEdge30A + vEdge30B
+	Interface (ServiceVPN)
+		= VRRP 
+			Group ID
+			Priority (Interface)				#Highest priority becomes master
+			Track OMP / Track Prefix List		#Optional
+			IP Address (Virtual)
+			
+######################################################################
+
+Access Control List (Localized Policy)
+
+Required:
+	Interface: ServiceInterface with ACL		#Ingress/Egress ACL
+	Data Prefix: SourcePrefix, DestinationPrefix
+	
+Policy:
+	Localized Policy > Access Control Lists > Add IPv4/6 ACL Policy
+		Sequence List 1
+			Sequence Rule 1
+				Match = Source Data Prefix List = SourcePrefix
+				Match = Destination Data Prefix List = DestinationPrefix
+				Action = Drop
+				
+		Sequence List 2
+				Match = Blank
+				Action = Accept
+				
+		Default Action = Accept
+
+Apply:
+	Localized Policy > Configure Access Control List > Add/Import ACL Policy
+	
+	Template > Device > "Device Template" > Service VPN > <add Service Interface with ACL>
+	Template > Device > "Device Template" > Additional Templates > Policy > <Chose_Policy>
+	
+######################################################################
+
+
