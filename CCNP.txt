@@ -78,4 +78,51 @@ Troubleshoot:
 Notes:
 	
 ======================================================================================================
+
+Access Control List (ACL)
+
+STANDERD:
+	Matches= Source IP only
+	ID Number = 1-99 or 1300-1999
+	Action = Accept or Deny | Remark
+
+	Numbered ACL >
+		access-list <ID> <action> <source>
+
+	Named ACL >
+		ip access-list standerd <ID or Name>
+			<sequence no> <action> <source>
 	
+EXTENDED:
+	Matches= Source IP, Destination IP, Source Port, Destination Port, Protocol
+	ID Number = 100-199 or 2000-2699
+	Action = Accept or Deny
+	Protocol= ip, tcp, udp, icmp etc.
+	Source | Destination = Host, Network [Wildcard], IP Address [Port], Any
+		Port = eq <#>, range <#> <#>, gt <#>, lt <#>, neq <#>
+
+	Numbered ACL >
+		access-list <ID> <action> <protocol> <source> <destination>
+
+	Named ACL >
+		ip access-list standerd <ID or Name>
+			<sequence no> <action> <protocol> <source> <destination>
+
+
+APPLY ACL:
+	Interface > (aka Packet filter)
+		per Interface = fa0/0, gi/0 etc.
+		per Direction = In or Out
+		per Protocol = IPv4 or IPv6
+
+	interface gi0/0
+		ip access-group <ID> <Direction> life
+
+Notes:
+	Standerd ACL cannot delete single entry of the list.
+	Extended ACL can delete, insert and modify with <no, sequence no, resequence> commands
+	Standerd ACL should be closer to the Destination
+	Extended ACL should be closer to the source
+	Can be applied to Interface | NAT | VPN | Route-Map | QoS
+	Denied ACL should be applied the end of the list.
+	ACL entries are processed top to bottom sequence of the list.
