@@ -5,7 +5,7 @@
 +Direct Internet Access
 +VPN Route Leaking
 +Application Aware Routing
-+Service Chaning (i.e-Firewall,Application)
++Service Chaining (i.e-Firewall,Application)
 +ACL
 
 -VPN Membership
@@ -19,7 +19,7 @@
 ######################################################################
 
 Hub and Spoke - Policy
-https://www.youtube.com/watch?v=uTiq5ct4SPQ
+watch?v=uTiq5ct4SPQ
 
 Required:
 	Default NULL Route = Hub > Service VPN
@@ -39,7 +39,7 @@ Policy:
 ======================================================================
 
 Hub and Spoke - Routing Based Policy (Type-1)
-https://www.youtube.com/watch?v=LjsqbgSGtmU
+watch?v=LjsqbgSGtmU
 
 Required:
 	Default NULL Route = Hub = Service VPN
@@ -62,11 +62,11 @@ Policy:
 ======================================================================
 			
 Hub and Spoke - TLOC Based Policy (Type-2)
-https://www.youtube.com/watch?v=oS1NjMEZDmA
+watch?v=oS1NjMEZDmA
 
 Required:
 	List = HubSite, SpokeSite
-	VPN = ServicVPN
+	VPN = ServiceVPN
 	Prefix = Spoke PrefixList (optional)
 	TLOC = HubTLOC
 
@@ -86,7 +86,7 @@ Policy:
 ######################################################################
 
 TLOC Extension (Template)
-https://www.youtube.com/watch?v=gdLer4gmeX8
+watch?v=gdLer4gmeX8
 
 Biz-Internet TLOC-Extention:
 
@@ -245,6 +245,26 @@ vEdge30A + vEdge30B
 			
 ######################################################################
 
+Service Chaining
+
+Required:
+	Service = FW (add FW service to the ServiceVPN of vEdge with Firewall)
+	Site = SiteList
+	VPN = ServiceVPN
+	
+Policy:
+	Centralized > Topology > Custom Control > Route
+		Sequence Rule
+			Match = Site = SiteList
+				VPN = VPNList
+			Action = Service = Type = FW | VPN = ServiceVPN
+		
+		Default Action = Allow
+
+	Centralized > Apply Policy > Topology
+		Outbound Site List = SiteList
+
+######################################################################
 Access Control List (Localized Policy)
 
 Required:
