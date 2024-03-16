@@ -60,7 +60,7 @@ config
 #tclsh
 	puts [open "flash:KEY.ca" w+] {
 	[paste the certificate here]
-	}
+	}									#save and quit "Double Enter"
 
 3) Install Root-CA (KEY.ca)
 #request platform software sdwan root-cert-chain install bootflash:KEY.ca
