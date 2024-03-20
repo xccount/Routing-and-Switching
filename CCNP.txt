@@ -87,11 +87,11 @@ STANDERD:
 	Action = Accept or Deny | Remark
 
 	Numbered ACL >
-		access-list <ID> <action> <source>
+		access-list <ID> <action> <source>					#IP, Host or Any
 
 	Named ACL >
 		ip access-list standerd <ID or Name>
-			<sequence no> <action> <source>
+			<sequence no> <action> <source>					#IP, Host or Any
 	
 EXTENDED:
 	Matches= Source IP, Destination IP, Source Port, Destination Port, Protocol
