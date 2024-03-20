@@ -1,0 +1,43 @@
+======================================================================================================
+OSPF - Open Short Path Fast
+
+configure terminal
+	router ospf <Process Id>
+		network <Int IP> <Wildcard> area <Area No>
+	
+	interface <Type No>
+		ip ospf <Process ID> area <Area No>
+
+	interface <Type No> (Highest Priority Superior)
+		ip ospf priority 0 (DROTHER Fixed)
+		ip ospf priority 1-255 (DR/BDR/DROTHER)
+		
+	LAS Type 1, 2 and 3
+	Add Point to Point
+		network <Network IP> <Wildcard> area <Area No>
+
+	Add Multi Broadcast Domain Range (Non-Summarized)
+		network <Summarized Network IP> <Wildcard> area <Area No>
+
+	Add Summarized Broadcast Domain
+		area 0 range <Summarized Network IP> <Wildcard>
+		
+	LSA Type 5
+		redistribute <Route Type>
+
+	LSA Type 7
+		area <Area No> nssa default-information-originate
+		
+======================================================================================================
+
+1. Point to Point
+2. Broadcast
+3. Non-Broadcast
+4. Point to Multipoint
+5. Point to Multipoint Non-Broadcast
+
+
+
+*
+* Every other area should be connected to AREA 0, is a backbone area.
+* Serial Link = Point to Point, Ethernet Link = Broadcast (OSPF)
