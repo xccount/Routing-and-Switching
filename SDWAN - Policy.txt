@@ -14,6 +14,7 @@
 *Security
 *CoLo Clastering
 -Cloud on Ramp
+-SAAS
 -ZTP, Respirotory
 
 ######################################################################
@@ -156,20 +157,21 @@ Direct Internet Access - Backhaul and Fallback Policy
 
 Required:
 	NAT = Transport VPN Internet Interface
-	Site = DIASite
+	Site = DIAHub, DIASite
+	TLOC = HubTLOC
 	VPN = DIAVPN
-	Prefix = Source PrefixList, DetaCenter Prefixlist
+	Prefix = DIASite PrefixList, DIAHub Prefixlist
 
 Policy:
 	Centralized > Trafic Policy > Traffic Data
 		Sequence Type = Custom
 			Sequence Rule 1
-				Match = Source Data Prefix = Source PrefixList
-					Destination Data Prefix = DetaCenter PrefixList
-				Action = Accept
-			Sequence Rule 2
-				Match = Source Data Prefix = Source PrefixList
-				Action = Accept = NAT VPN = Fallback
+				Match = Source Data Prefix = DIASite PrefixList
+				Action = VPN = DIAVPN
+					TLOC-List = HubTLOC
+					NAT-VPN = 0
+					Allow
+				Default Action = Allow
 
 	Centralized > Apply Policy > Traffic Data
 			From Service = Site List = DIASite
@@ -245,10 +247,10 @@ vEdge30A + vEdge30B
 			
 ######################################################################
 
-Service Chaining
+Service Chaining (Lable = 1004)
 
 Required:
-	Service = FW (add FW service to the ServiceVPN of vEdge with Firewall)
+	Service = FW (add FW IP to the ServiceVPN of vEdge with Firewall)
 	Site = SiteList
 	VPN = ServiceVPN
 	
@@ -263,6 +265,8 @@ Policy:
 
 	Centralized > Apply Policy > Topology
 		Outbound Site List = SiteList
+
+Notes: Firewall must know about the OMP networks for monitoring, for that we can use dynamic routing.
 
 ######################################################################
 Access Control List (Localized Policy)
