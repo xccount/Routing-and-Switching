@@ -1,41 +1,179 @@
 ======================================================================================================
-Router on Stick
+Device Security
+
+#enable password/secret xxx
+#username xxxx password/secret xxxx
+
+#line vty 0 15
+	transport input ssh
+	login
+	password xxxxx | login local
+	exec-timeout 5 30  (minuite second)
+
+#ip domain name xxx.com
+#crypto key generate rsa general-keys modulus 1024
+
+#service password-encryption
+#security password min-length 8
+#login block-for XX attempts XX within XX
+
+======================================================================================================
+Router on Stick (Sub-Interface)
 
 Router:
-configure terminal
-	interface <type no>
+#configure terminal
+	interface <type> <id>
 		no ip address
 		no shutdown
-	interface <type no>.<sub-interface no>
+	interface <type> <id>.<sub-interface no>
 		encapsulation dot1q <vlan id>
 		ip address <ip> <subnet>
 
 Switch:
-configure terminal
-	interface <type no>	#interface connected to router
+#configure terminal
+	interface <type> <id>	#interface connected to router
 		switchport trunk encapsulation dot1q
 		switchport mode trunk
 		switchport allowed vlan add <vlan id>
 	
-	interface <type no> #interface for access devices
+	interface <type> <id> #interface for access devices
 		switchport mode access
 		switchport access vlan <vlan id>
 	
 ======================================================================================================
+VLAN = Virtual LAN
 
+#configure terminal
+	vlan <id>	(to create new vlan)
+		ip address <ip> <subnet>	(for inter vlan routing)
+	
+	interface range <type> <id> - <id>
+		switchport trunk encapsulation dot1q
+		switchport mode trunk
+		switchport trunk allowed vlan <id>
+		switchport trunk native vlan <id>	(for management purpose, must match) 
+		
+	interface <type> <id>
+		switchport mode access
+		switchport access vlan <id>
+		switchport voice vlan <id>	(optional for voice)
+	
+Verify:
+	show vlan brief
+	show interface trunk
+	
+Notes:
+	Modes = Trunk, Access, Hybrid
+	1-4096
+
+======================================================================================================
+
+VTP = VLAN Trunking Protocol v1, v2
+
+#configure terminal
+	vtp domain NAME
+	vtp mode server/client/transparent
+	vtp password PASSWORD
+	*vtp pruning	(forward all vlan to trunk, only vlan with active port)
+------------------------------------------------------------------------------------------------------
+VTP = VLAN Trunking Protocol v3
+
+#configure terminal
+	vtp version 3
+#vtp primary vlan	(To create primary server)
+
+Note:
+	Modes = Server, Client, Transparent
+	v2 = Higher Revision Number wins
+	v3 = Only one primary server allowed
+	
+======================================================================================================
+EtherChannel (Layer-2)
+
+#configure terminal
+	interface range <type> <id> - <id>
+		channel-group <group no> mode <mode type>
+		
+------------------------------------------------------------------------------------------------------
+EtherChannel (Layer-3)
+
+#configure terminal
+		interface port-channel <id>
+		ip address <ip> <subnet>
+		no shutdown
+
+	interface range <type> <id>
+		shutdown	(Layer-3 required ports at shutdown state)
+		channel-group <group no> mode <mode type>
+		no shutdown
+		
+Notes:
+	Modes = 
+		On = No negotiation
+		Desirable & Auto = Initiate or Listen for PAgP
+		Active & Passive = Initiate or Listen for LACP
+		
+	Load Balancing =
+		Source & Destination MAC address
+		Source & Destination IP address
+		
+	Layer-2 and Layer-3 cannot mix
+======================================================================================================
+
+STP = Spanning Tree Protocol
+
+RSTP = Rapid Spanning Tree Protocol
+
+------------------------------------------------------------------------------------------------------
+MSTP = Multiple Spanning Tree Protocol
+
+#configure terminal
+	spanning-tree mode mst
+	spanning-tree mst configuration
+		instance <no-1> vlan <vid-1>
+		instance <no-2> vlan <vid-2>
+		exit
+	spanning-tree mst <instance no-1> root <primary|secondary>
+	spanning-tree mst <instance no-2> root <secondary|primary>
+
+------------------------------------------------------------------------------------------------------
+PVST and RPVST = Per Vlan Spanning Tree and Rapid Per Vlan Spanning Tree
+
+#configure terminal
+	vlan <id-1>
+	vlan <id-2>
+	interface <type> <id>
+		switchport trunk encapsulation dot1q
+		switchport mode trunk
+		switchport trunk allowed vlan <id-1>,<id-2>
+		exit
+	spanning-tree mode pvst | rapid-pvst
+	spanning-tree vlan <vlan id-1> priority 0 (root bridge)
+	spanning-tree vlan <vlan id-1> priority 4096
+
+Verify:
+	show spanning-tree vlan <id>
+	show spanning-tree summery
+
+Notes:
+	Port Role: Root, Designated, Alternate
+	Port State: Forwarding, Blocking
+	lower priority is better, 0 root bridge, 4096 increment value, highest 61440
+
+======================================================================================================
 Hot Standby Router Protocol: HSRP
 
 R1 Active Router
-configure terminal
+#configure terminal
 	interface <inside int id>
 		ip add <ip> <subnet>
 		standby <sequence no> ip <virtual gateway ip> 
-		standby <sequence no> priority <priority no> #highest successor
+		standby <sequence no> priority <priority no>	(highest successor)
 		standby <sequence no> preempt
-		standby <sequence no> track <outside int id> #mention type of tracker i.e int, host, protocol
+		standby <sequence no> track <outside int id>	(mention type of tracker i.e int, host, protocol)
 
 R2 Standby Router
-configure terminal
+#configure terminal
 	interface <inside int id>
 		ip add <ip> <subnet>
 		standby <sequence no> ip <virtual gateway ip> 
@@ -49,15 +187,14 @@ Notes:
 	Group No: 0-255, 0-4095 (v2)
 	Default standby interface decement priority 10
 	Active and Standby router interface and Virtual Gateway should be in same Domain.
-	
-	
+
 ======================================================================================================
 
 Virtual Router Redundancy Protocol (VRRP)
 
 R1 Active Router
-configure terminal
-	track <track no> interface <outside int id> line-protocol #mention type of tracker i.e int, host, protocol
+#configure terminal
+	track <track no> interface <outside int id> line-protocol	(mention type of tracker i.e int, host, protocol)
 	
 	interface <inside int id>
 		ip add <ip> <subnet>
@@ -66,7 +203,7 @@ configure terminal
 		vrrp <Group no> track <track no> decement <decement no>
 
 R2 Standby Router
-configure terminal
+#configure terminal
 	interface <inside int id>
 		vrrp <Group no> ip <virtual gateway ip>
 
@@ -76,7 +213,6 @@ Notes:
 	Preemt Enabled by Default
 	Active and Standby router interface and Virtual Gateway should be in same Domain.
 	
-
 ======================================================================================================
  
 GLBP
@@ -85,7 +221,7 @@ GLBP
 
 IP SLA: ISP Failover
 
-configure terminal
+#configure terminal
 	ip sla <entry no>
 		icmp-echo <destination ip> source-ip/int <ip/int>
 			frequency/ timeout/ threshold etc #echo parameters
@@ -110,11 +246,11 @@ STANDERD:
 	Action = Accept or Deny | Remark
 
 	Numbered ACL >
-		access-list <ID> <action> <source>					#IP, Host or Any
+		access-list <ID> <action> <source>	(IP, Host or Any)
 
 	Named ACL >
 		ip access-list standerd <ID or Name>
-			<sequence no> <action> <source>					#IP, Host or Any
+			<sequence no> <action> <source>	(IP, Host or Any)
 	
 EXTENDED:
 	Matches= Source IP, Destination IP, Source Port, Destination Port, Protocol
@@ -133,7 +269,7 @@ EXTENDED:
 
 
 APPLY ACL:
-	Interface > (aka Packet filter)
+	Interface >	(aka Packet filter)
 		per Interface = fa0/0, gi/0 etc.
 		per Direction = In or Out
 		per Protocol = IPv4 or IPv6
@@ -154,8 +290,8 @@ Notes:
 
 VRF - Virtual Routing and Forwarding
 
-configure terminal
-	ip vrf NAME1						#Case Sensetive
+#configure terminal
+	ip vrf NAME1	(Case Sensetive)
 		exit
 	ip vrf NAME2
 		exit

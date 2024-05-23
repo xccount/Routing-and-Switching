@@ -1,3 +1,4 @@
+===========================CSR1000v===========================
 #config-transaction
 	hostname Site10A
  
@@ -19,22 +20,6 @@
 		exit
 	ip route 0.0.0.0 0.0.0.0 172.16.10.1
 	
-	sdwan
-		interface GigabitEthernet1
-			tunnel-interface
-				color biz-internet
-				encapsulation ipsec
-				allow service all
-				exit
-			exit
-		interface GigabitEthernet2
-			tunnel-interface
-				color mpls
-				encapsulation ipsec
-				allow service all
-				exit
-			exit
-		exit
 	interface Tunnel 1
 		ip unnumbered GigabitEthernet1
 		tunnel source GigabitEthernet1
@@ -44,6 +29,23 @@
 		ip unnumbered GigabitEthernet2
 		tunnel source GigabitEthernet2
 		tunnel mode sdwan
+		exit
+
+	sdwan
+		interface GigabitEthernet1
+			tunnel-interface
+				color biz-internet restrict
+				encapsulation ipsec
+				allow service all
+				exit
+			exit
+		interface GigabitEthernet2
+			tunnel-interface
+				color mpls restrict
+				encapsulation ipsec
+				allow service all
+				exit
+			exit
 		exit
 	exit
 commit

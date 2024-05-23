@@ -251,7 +251,7 @@ Service Chaining (Lable = 1004)
 
 Required:
 	Service = FW (add FW IP to the ServiceVPN of vEdge with Firewall)
-	Site = SiteList
+	Site = SiteList (exclude the site, which have FW)
 	VPN = ServiceVPN
 	
 Policy:
